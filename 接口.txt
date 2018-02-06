@@ -1,0 +1,48 @@
+1,图片保存接口：
+http://172.16.100.161:8000/myapi/save/
+发送的数据（json格式）：{
+        "Name":"CSDN_20180125134908_存款.png",            //系统名称_保存时间字符串_图片名称
+        "KeyWord":[[55,255,255,255],[255,155,200,255]]   //灰度后的图片数组
+     }
+
+return:
+    return JsonResponse({'info': '系统名为空'})            //系统名为空
+    return JsonResponse({'info':'Ok'})                   //图片保存成功
+    return JsonResponse({'info': 'error'})              //系统内部异常
+
+
+2，图片数量核对接口，正确后调用训练的方法，数量不正确就返回服务器已保存图片，进行二次上传：
+http://172.16.100.161:8000/myapi/ensure/
+发送的数据（json格式）：{
+        "Name":"链家",                                    //系统名称
+        "Num":40                                          //图片数量
+    }
+
+return:
+    return JsonResponse({'info':'系统名为空'})           //系统名为空
+    return JsonResponse({'info':'0'})                   //判断图片是否已经训练，已经训练完成返回0
+    return JsonResponse({'info':'1'})                   //表示图片没有丢失,图片正在训练
+    return JsonResponse({'info':listFileName})          //返回图片列表
+    return JsonResponse({'info':'-1'})                  //不存在该系统
+    return JsonResponse({'info':'error'})               //系统内部异常
+
+
+3，图片分类识别，上传灰度后的图片数组，返回图片名称，未识别出的返回“未知页面”：
+http://172.16.100.161:8000/myapi/analysis/
+发送的数据（json格式）：{
+        "KeyWord":[[55,255,255,255],[255,155,200,255]]   //灰度后的图片数组
+     }
+
+return:
+    return JsonResponse(d)                          //返回序列化的Json  图片对象数据
+    d的格式:{
+          "pk": null,
+          "model": "myApi.pic",
+          "fields": {
+            "picNumType": "1",                      //在训练类别数组中的位置下标，从1开始计算，0表示未能识别
+            "picName": "哈哈",                       //未使用
+            "picTypeName": "投资.png"                 //图片列别
+          }
+        }
+    return JsonResponse({'info':'error'})             //系统内部异常
+

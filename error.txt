@@ -1,0 +1,286 @@
+
+===============================OSError: raw write()================================================
+解决：
+参考：https://stackoverflow.com/questions/47356993/oserror-raw-write-returned-invalid-length-when-using-print-in-python
+搜狗：OSError: raw write() returned invalid length
+步骤：
+pip install win_unicode_console
+在代码中加入如下信息：
+import win_unicode_console
+win_unicode_console.enable()
+
+
+Traceback (most recent call last):
+  File "D:\AI\Python35\lib\site-packages\django\core\handlers\exception.py", line 35, in inner
+    response = get_response(request)
+  File "D:\AI\Python35\lib\site-packages\django\core\handlers\base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "D:\AI\Python35\lib\site-packages\django\core\handlers\base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\AI\Python35\lib\site-packages\django\test\utils.py", line 371, in inner
+    return func(*args, **kwargs)
+  File "E:\PyCharmWork\PythonWebApp\ApiPicDjangoSite\PicWeb\views.py", line 28, in picAnalysis
+    print('image-->', im.size)
+OSError: raw write() returned invalid length 44 (should have been between 0 and 22)
+[09/Jan/2018 10:56:50] "POST /pic/analysis/ HTTP/1.1" 500 77271
+
+
+
+
+--- Logging error ---
+Traceback (most recent call last):
+  File "D:\AI\Python35\lib\logging\__init__.py", line 983, in emit
+    stream.write(self.terminator)
+OSError: raw write() returned invalid length 126 (should have been between 0 and 63)  #https://stackoverflow.com/questions/35394616/oserror-raw-readinto-returned-invalid-length-when-use-websockets
+Call stack:
+  File "D:\AI\Python35\lib\threading.py", line 882, in _bootstrap
+    self._bootstrap_inner()
+  File "D:\AI\Python35\lib\threading.py", line 914, in _bootstrap_inner
+    self.run()
+  File "D:\AI\Python35\lib\threading.py", line 862, in run
+    self._target(*self._args, **self._kwargs)
+  File "D:\AI\Python35\lib\socketserver.py", line 625, in process_request_thread
+    self.finish_request(request, client_address)
+  File "D:\AI\Python35\lib\socketserver.py", line 354, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "D:\AI\Python35\lib\socketserver.py", line 681, in __init__
+    self.handle()
+  File "D:\AI\Python35\lib\site-packages\django\core\servers\basehttp.py", line 154, in handle
+    handler.run(self.server.get_app())
+  File "D:\AI\Python35\lib\wsgiref\handlers.py", line 138, in run
+    self.finish_response()
+  File "D:\AI\Python35\lib\wsgiref\handlers.py", line 183, in finish_response
+    self.close()
+  File "D:\AI\Python35\lib\wsgiref\simple_server.py", line 36, in close
+    self.status.split(' ',1)[0], self.bytes_sent
+  File "D:\AI\Python35\lib\http\server.py", line 540, in log_request
+    self.requestline, str(code), str(size))
+  File "D:\AI\Python35\lib\site-packages\django\core\servers\basehttp.py", line 124, in log_message
+    level(format, *args, extra=extra)
+Message: '"%s" %s %s'
+Arguments: ('POST /pic/analysis/ HTTP/1.1', '200', '159')
+
+
+
+
+
+
+==========================ConnectionResetError: [WinError 10054]=================================================
+远程主机关闭，问题不大，不影响执行
+
+Traceback (most recent call last):
+  File "D:\AI\Python35\lib\wsgiref\handlers.py", line 138, in run
+    self.finish_response()
+  File "D:\AI\Python35\lib\wsgiref\handlers.py", line 180, in finish_response
+    self.write(data)
+  File "D:\AI\Python35\lib\wsgiref\handlers.py", line 274, in write
+    self.send_headers()
+  File "D:\AI\Python35\lib\wsgiref\handlers.py", line 332, in send_headers
+    self.send_preamble()
+  File "D:\AI\Python35\lib\wsgiref\handlers.py", line 252, in send_preamble
+    self._write(('HTTP/%s %s\r\n' % (self.http_version,self.status)).encode('iso-8859-1'))
+  File "D:\AI\Python35\lib\wsgiref\handlers.py", line 453, in _write
+    result = self.stdout.write(data)
+  File "D:\AI\Python35\lib\socket.py", line 593, in write
+    return self._sock.send(b)
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+[09/Jan/2018 11:26:21] "POST /pic/analysis/ HTTP/1.1" 500 59
+----------------------------------------
+Exception happened during processing of request from ('192.168.7.144', 51853)
+Traceback (most recent call last):
+  File "D:\AI\Python35\lib\wsgiref\handlers.py", line 138, in run
+    self.finish_response()
+  File "D:\AI\Python35\lib\wsgiref\handlers.py", line 180, in finish_response
+    self.write(data)
+  File "D:\AI\Python35\lib\wsgiref\handlers.py", line 274, in write
+    self.send_headers()
+  File "D:\AI\Python35\lib\wsgiref\handlers.py", line 332, in send_headers
+    self.send_preamble()
+  File "D:\AI\Python35\lib\wsgiref\handlers.py", line 252, in send_preamble
+    self._write(('HTTP/%s %s\r\n' % (self.http_version,self.status)).encode('iso-8859-1'))
+  File "D:\AI\Python35\lib\wsgiref\handlers.py", line 453, in _write
+    result = self.stdout.write(data)
+  File "D:\AI\Python35\lib\socket.py", line 593, in write
+    return self._sock.send(b)
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\AI\Python35\lib\wsgiref\handlers.py", line 141, in run
+    self.handle_error()
+  File "D:\AI\Python35\lib\site-packages\django\core\servers\basehttp.py", line 86, in handle_error
+    super().handle_error()
+  File "D:\AI\Python35\lib\wsgiref\handlers.py", line 368, in handle_error
+    self.finish_response()
+  File "D:\AI\Python35\lib\wsgiref\handlers.py", line 180, in finish_response
+    self.write(data)
+  File "D:\AI\Python35\lib\wsgiref\handlers.py", line 274, in write
+    self.send_headers()
+  File "D:\AI\Python35\lib\wsgiref\handlers.py", line 331, in send_headers
+    if not self.origin_server or self.client_is_modern():
+  File "D:\AI\Python35\lib\wsgiref\handlers.py", line 344, in client_is_modern
+    return self.environ['SERVER_PROTOCOL'].upper() != 'HTTP/0.9'
+TypeError: 'NoneType' object is not subscriptable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\AI\Python35\lib\socketserver.py", line 625, in process_request_thread
+    self.finish_request(request, client_address)
+  File "D:\AI\Python35\lib\socketserver.py", line 354, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "D:\AI\Python35\lib\socketserver.py", line 681, in __init__
+    self.handle()
+  File "D:\AI\Python35\lib\site-packages\django\core\servers\basehttp.py", line 154, in handle
+    handler.run(self.server.get_app())
+  File "D:\AI\Python35\lib\wsgiref\handlers.py", line 144, in run
+    self.close()
+  File "D:\AI\Python35\lib\wsgiref\simple_server.py", line 36, in close
+    self.status.split(' ',1)[0], self.bytes_sent
+AttributeError: 'NoneType' object has no attribute 'split'
+----------------------------------------
+
+
+
+
+
+
+
+===========Internal Server Error：ttributeError: 'override_settings' object has no attribute 'wrapped'=========
+Internal Server Error：ttributeError，可能是服务器资源超载：
+参考：https://www.pc899.com/guzhang/15239.html
+
+
+AttributeError: 'override_settings' object has no attribute 'wrapped'：
+参考：去掉view.py的@override_settings(DATA_UPLOAD_MAX_MEMORY_SIZE=10242880)，在ApiDjangoSite/settings.py
+添加“DATA_UPLOAD_MAX_MEMORY_SIZE = 10242880”
+
+name= ['新浪微博', '热门']
+===>数组大小： 1366 728
+Internal Server Error: /myapi/save/
+Traceback (most recent call last):
+  File "D:\AI\Python35\lib\site-packages\django\core\handlers\exception.py", line 35, in inner
+    response = get_response(request)
+  File "D:\AI\Python35\lib\site-packages\django\core\handlers\base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "D:\AI\Python35\lib\site-packages\django\core\handlers\base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "D:\AI\Python35\lib\site-packages\django\test\utils.py", line 371, in inner
+    return func(*args, **kwargs)
+  File "D:\AI\Python35\lib\site-packages\django\test\utils.py", line 343, in __exit__
+    self.disable()
+  File "D:\AI\Python35\lib\site-packages\django\test\utils.py", line 414, in disable
+    settings._wrapped = self.wrapped
+AttributeError: 'override_settings' object has no attribute 'wrapped'
+[19/Jan/2018 16:01:56] "POST /myapi/save/ HTTP/1.1" 500 71536
+
+
+
+=======================================sqlite3.NotSupportedError======================================================
+#服务器安装sqlite3,重新安装python版本
+
+Performing system checks...
+
+System check identified no issues (0 silenced).
+Unhandled exception in thread started by <function check_errors.<locals>.wrapper at 0x7f27be14ab70>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/usr/local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/usr/local/lib/python3.5/site-packages/django/db/backends/sqlite3/base.py", line 162, in get_new_connection
+    conn = Database.connect(**conn_params)
+sqlite3.NotSupportedError: URIs not supported
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.5/site-packages/django/utils/autoreload.py", line 225, in wrapper
+    fn(*args, **kwargs)
+  File "/usr/local/lib/python3.5/site-packages/django/core/management/commands/runserver.py", line 124, in inner_run
+    self.check_migrations()
+  File "/usr/local/lib/python3.5/site-packages/django/core/management/base.py", line 427, in check_migrations
+    executor = MigrationExecutor(connections[DEFAULT_DB_ALIAS])
+  File "/usr/local/lib/python3.5/site-packages/django/db/migrations/executor.py", line 18, in __init__
+    self.loader = MigrationLoader(self.connection)
+  File "/usr/local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 49, in __init__
+    self.build_graph()
+  File "/usr/local/lib/python3.5/site-packages/django/db/migrations/loader.py", line 206, in build_graph
+    self.applied_migrations = recorder.applied_migrations()
+  File "/usr/local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 61, in applied_migrations
+    if self.has_table():
+  File "/usr/local/lib/python3.5/site-packages/django/db/migrations/recorder.py", line 44, in has_table
+    return self.Migration._meta.db_table in self.connection.introspection.table_names(self.connection.cursor())
+  File "/usr/local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 255, in cursor
+    return self._cursor()
+  File "/usr/local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 232, in _cursor
+    self.ensure_connection()
+  File "/usr/local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/usr/local/lib/python3.5/site-packages/django/db/utils.py", line 89, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 216, in ensure_connection
+    self.connect()
+  File "/usr/local/lib/python3.5/site-packages/django/db/backends/base/base.py", line 194, in connect
+    self.connection = self.get_new_connection(conn_params)
+  File "/usr/local/lib/python3.5/site-packages/django/db/backends/sqlite3/base.py", line 162, in get_new_connection
+    conn = Database.connect(**conn_params)
+django.db.utils.NotSupportedError: URIs not supported
+
+==============================================TypeError: Cannot interpret feed_dict key as Tensor===============================================================
+多个识别分析进程进行，识别报的错,主要是因为不同对象里面的不同sess使用了同一进程空间下的相同的默认图graph。
+参考：http://blog.csdn.net/xierhacker/article/details/53860379
+http://blog.csdn.net/jmh1996/article/details/78793650
+http://blog.csdn.net/aiya_xiazai/article/details/58701092
+
+D:\AI\Python35\lib\site-packages\keras\models.py:288: UserWarning: Error in loading the saved optimizer state. As a result, your model is star
+ting with a freshly initialized optimizer.
+  warnings.warn('Error in loading the saved optimizer '
+Internal Server Error: /myapi/analysis2/
+Traceback (most recent call last):
+  File "D:\AI\Python35\lib\site-packages\tensorflow\python\client\session.py", line 1064, in _run
+    allow_operation=False)
+  File "D:\AI\Python35\lib\site-packages\tensorflow\python\framework\ops.py", line 3035, in as_graph_element
+    return self._as_graph_element_locked(obj, allow_tensor, allow_operation)
+  File "D:\AI\Python35\lib\site-packages\tensorflow\python\framework\ops.py", line 3114, in _as_graph_element_locked
+    raise ValueError("Tensor %s is not an element of this graph." % obj)
+ValueError: Tensor Tensor("conv2d_1_input:0", shape=(?, 200, 200, 1), dtype=float32) is not an element of this graph.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\AI\Python35\lib\site-packages\django\core\handlers\exception.py", line 35, in inner
+    response = get_response(request)
+  File "D:\AI\Python35\lib\site-packages\django\core\handlers\base.py", line 128, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "D:\AI\Python35\lib\site-packages\django\core\handlers\base.py", line 126, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "E:\PyCharmWork\PythonWebApp\ApiDjangoSite\myApi\views.py", line 64, in picAnalysis2
+    prenum, systemTypeName = predictBank(im)  # 对图片进行预测，并返回预测结果
+  File "E:\PyCharmWork\PythonWebApp\ApiDjangoSite\myApi\PreDictBankFunc.py", line 52, in predictBank
+    result = models.predict(X_test)
+  File "D:\AI\Python35\lib\site-packages\keras\models.py", line 1006, in predict
+    return self.model.predict(x, batch_size=batch_size, verbose=verbose)
+  File "D:\AI\Python35\lib\site-packages\keras\engine\training.py", line 1783, in predict
+    verbose=verbose, steps=steps)
+  File "D:\AI\Python35\lib\site-packages\keras\engine\training.py", line 1299, in _predict_loop
+    batch_outs = f(ins_batch)
+  File "D:\AI\Python35\lib\site-packages\keras\backend\tensorflow_backend.py", line 2352, in __call__
+    **self.session_kwargs)
+  File "D:\AI\Python35\lib\site-packages\tensorflow\python\client\session.py", line 889, in run
+    run_metadata_ptr)
+  File "D:\AI\Python35\lib\site-packages\tensorflow\python\client\session.py", line 1067, in _run
+    + e.args[0])
+TypeError: Cannot interpret feed_dict key as Tensor: Tensor Tensor("conv2d_1_input:0", shape=(?, 200, 200, 1), dtype=float32) is not an elemen
+t of this graph.
+[29/Jan/2018 15:24:45] "POST /myapi/analysis2/ HTTP/1.1" 500 178729
+
+
+
+
+===============================================================================================
+
+
+
+
