@@ -26,7 +26,7 @@ SECRET_KEY = '@8-s9g+)512nv_z%83qk09^w9965y8so$(!q^!2!!nd=iuloap'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-DATA_UPLOAD_MAX_MEMORY_SIZE = 10242880
+DATA_UPLOAD_MAX_MEMORY_SIZE = 7242880
 
 # Application definition
 

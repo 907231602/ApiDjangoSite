@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 import sqlite3
 
-conn = sqlite3.connect('SystemPic.db')
+#conn = sqlite3.connect('SystemPic.db')
 
-print("Opened database successfully")
+#print("Opened database successfully")
+
+

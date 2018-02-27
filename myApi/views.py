@@ -6,20 +6,21 @@ from myApi.PreDictBankFunc import predictBank
 from myApi.models import Pic
 import simplejson
 from django.core.serializers import serialize
-from django.test import override_settings
+#from django.test import override_settings
 import numpy as np
 from PIL import Image
-#import datetime
+import io
 import os
 from . import Cnn_train_1920_1080 as bankTrain
 from . import ScreenExpansion as screen
-from myApi.models import SystemPic
+#from myApi.models import SystemPic
 import threading
 from myApi.SavePic import getPicInfo
 import zmq
 import win_unicode_console
 win_unicode_console.enable()
 import socket
+import  base64
 # Create your views here.
 
 #图片分类、识别,返回json类型的图片数据
@@ -27,6 +28,7 @@ import socket
 def picAnalysis(request):
     try:
         req = simplejson.loads(request.body)
+        Image.frombytes()
 
         # 对图片进行处理，把传过来的数组进行还原
         listpic = req['KeyWord']
@@ -66,6 +68,44 @@ def picAnalysis(request):
     except socket.timeout as e:
         print("-----socket timout:", e)
 
+def picAnalysisBase64(request):
+    try:
+        print(request.META['CONTENT_LENGTH'])
+        req = simplejson.loads(request.body)
+        
+        # 对图片进行处理，把传过来的数组进行还原
+        basePic = req['PicBase64']
+
+        # 还原图片信息
+        imgdata = base64.b64decode('''%s''' % basePic)
+        stream = io.BytesIO(imgdata)
+        im = Image.open(stream)
+        im = im.convert('L')  # 灰度
+        # 修改屏幕大小
+        im = screen.ScreenExpansCommon(im)
+
+        prenum, systemTypeName = predictBank(im)  # 对图片进行预测，并返回预测结果
+        im.close()
+
+        pic = Pic()
+        pic.picName = '哈哈'
+        pic.picNumType = prenum
+        if (prenum == 0):
+            pic.picTypeName = '未知页面'
+        else:
+            listSys = getPicInfo(systemTypeName)
+            pic.picTypeName = listSys[prenum - 1]
+        d = simplejson.loads(serialize('json', [pic])[1:-1])
+        return JsonResponse(d)
+    except ConnectionResetError as ce:
+        print("远程主机强迫关闭了一个现有的连接", ce)
+        return JsonResponse({'info': 'error'})
+
+    except ConnectionAbortedError as er:
+        print('er:', er)
+    except socket.timeout as e:
+        print("-----socket timout:", e)
+
 
     #分析图片2,用于测试，不实用
 def picAnalysis2(request):
@@ -88,8 +128,6 @@ def picAnalysis2(request):
     except ConnectionError as ce:
         print('异常',ce)
         return JsonResponse({"info":"2"})
-
-
 
 
 #保存图片，以日期(天)为单位，在日期文件下判断类别是否存在，否就创建，在类别下保留图片.  日期->类别->图片
@@ -129,6 +167,48 @@ def savePic(request):
     except BaseException as e:
         print('e===',e)
         return JsonResponse({'info': 'error'})
+
+
+def savePicBase64(request):
+    try:
+        basepath = 'static/imageTrain'
+        req = simplejson.loads(request.body)
+        name = str(req['Name']).split('_')  # name[0]：系统名；name[1]:时间；name[2]:图片名称
+        print('name=', name)
+        if (name == "" or name == None):
+            return JsonResponse({'info': '系统名为空'})
+        # 对图片进行处理，把传过来的数组进行还原
+        basePic = req['PicBase64']
+        # 还原图片信息
+        imgdata = base64.b64decode('''%s''' % basePic)
+        stream = io.BytesIO(imgdata)
+        im = Image.open(stream)
+        im = im.convert('L')  #灰度
+        # 修改屏幕大小
+        im = screen.ScreenExpansCommon(im)
+
+        # 确定文件夹,系统文件夹存在则保留图片，不存在则新建
+        # now=datetime.datetime.now().strftime('%Y%m%d%H%M%S')#当前时间
+        is_exit = os.path.exists(basepath + '/%s' % name[0])
+        if (is_exit):
+            pass
+        else:
+            os.makedirs(basepath + '/%s' % name[0])
+        # file = open(basepath + '/%s/%s_%s.png' % (name[0], name[1], name[2]), 'wb')
+        # file.write(imgdata)
+        # file.close()
+        # im=Image.open(basepath + '/%s/%s_%s.png' % (name[0], name[1], name[2]))
+        # im=im.convert('L')
+        # im = screen.ScreenExpansCommon(im)#大小转化
+        im.save(basepath + '/%s/%s_%s.png' % (name[0], name[1], name[2]))
+        # im.save(basepath + '/%s/%s_%s.png' % (name[0], name[1], name[2]))
+        im.close()
+        return JsonResponse({'info': 'Ok'})
+    except BaseException as e:
+        print('e===', e)
+        return JsonResponse({'info': 'error'})
+
+
 
 #确认上传图片是否丢失
 def ensurePic(request):
@@ -249,14 +329,47 @@ def insertPics(request):
     # return JsonResponse({'info':1})
 
 
+'''
+b'Content-Disposition: form-data; name="file";filename="20180110160317_\xe7\x99\xbb\xe5\xbd\x95.png"\r\nContent-Type:application/octet-stream\
+r\n\r\n\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x02\x00\x00\x00\x04\x08\x00\x00\x00\x00\x81\x84\xb1\xe5\x00\x00\x00\x14IDATx\x9cc0\xff\
+xcf\xf8\x9f\x81\x89a\x0e\xc3\x89\xff\x00\x19k\x04\x9c\xe0\xd4\x96&\x00\x00\x00\x00IEND\xaeB`\x82'
+'''
+
+
+# Quit the server with CTRL-BREAK.
+# hello
+# 186072(Base64)
+# [08/Feb/2018 14:05:25] "POST /myapi/load/ HTTP/1.1" 200 16
+# hello
+# 533143(IO)
+# [08/Feb/2018 14:09:05] "POST /myapi/load/ HTTP/1.1" 200 16
+
+
 def filepath(request):
     print("hello")
-    print(request.get_host())
-    req = request.body
+    print(request.body)
+    print(request.META['CONTENT_LENGTH'])
+    req = simplejson.loads(request.body)
+    print(req['name'])
+    # req = simplejson.loads(request.body)
+    # print(req)
+    # name=req['Name']
+    # print(name)
 
-    # 对图片进行处理，把传过来的数组进行还原
-    #name = req['Name']
-    print(req)
+    #basePic=req['PicBase64']
+
+    # basePic = '''/9j/4AAQSkZJRgABAQEAYABgAAD/4QA6RXhpZgAATU0AKgAAAAgAA1EQAAEAAAABAQAAAFERAAQAAAABAAAAAFESAAQAAAABAAAAAAAAAAD/2wB
+    # DAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyM
+    # jIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAEAAIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQ
+    # RBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp
+    # 6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAE
+    # CAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmao
+    # qOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD220sn+xweTezW8XlrshhjiCRjHCqNnAHQUUUUAf/Z'}'''
+
+    # imgdata = base64.b64decode('''%s''' % basePic)
+    # file = open('1.png', 'wb')
+    # file.write(imgdata)
+    # file.close()
 
     return JsonResponse({"info":"1111"})
 
